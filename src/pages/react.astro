@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { ExampleCounter } from '@components/react/examples/ExampleCounter'
+---
+
+<BaseLayout classes={{ mainContainer: '' }}>
+  <section class="prose dark:prose-inverse max-w-[80ch] mx-auto">
+    <h1>React in Astro</h1>
+    <p>
+      The following React component is loaded into an Astro island by the official
+      <code>@astrojs/react</code> integration:
+    </p>
+    <ExampleCounter client:load className="max-w-sm mx-auto" />
+    <p>
+      Astro's <code>client:load</code> directive is added to the component's props so Astro loads its JS on the client-side
+      and hydrates it as an interactive component.
+    </p>
+    <p>
+      Learn more about Astro islands and hydration of framework components (e.g. React, Svelte, etc.) from the{' '}
+      <a href="https://docs.astro.build/en/reference/directives-reference/#client-directives"
+        >Astro Docs on Client Directives</a
+      >.
+    </p>
+  </section>
+</BaseLayout>

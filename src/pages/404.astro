@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { Heading } from '@components/react/Heading'
+---
+
+<BaseLayout classes={{ mainContainer: '' }}>
+  <section class="prose dark:prose-inverse max-w-[80ch] mx-auto">
+    <Heading>Not Found (404)</Heading>
+    <div aria-hidden="true"><span>¯\_(ツ)_/¯</span></div>
+    <p>No content was found at this URL.</p>
+    <p><a href="/">Go Home</a></p>
+  </section>
+</BaseLayout>

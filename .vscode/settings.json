@@ -1,0 +1,27 @@
+{
+  // use project version of typescript in project dependencies over vscode-bundled or global typescript
+  "typescript.tsdk": "./node_modules/typescript/lib",
+
+  // associate mdx files with markdown for language features
+  "files.associations": {
+    "*.mdx": "markdown"
+  },
+
+  // comment out if you experience issues with vscode + eslint/prettier + json
+  "eslint.validate": ["json"],
+
+  // currently eslint + vscode doesn't appear to support the v9 file at this time despite the docs
+  // docs: use .js and if package.json `type: module` then mjs/esm should be used however there is an error
+  // "eslint.options": {
+  //   "overrideConfigFile": "eslint.config.js"
+  // }
+
+  // autocorrect eslint issues on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // this should match the html fontSize added to base style so that intellisense calculations are correct
+  // @see `tailwind/tailwind.preset.js` for this project
+  "tailwindCSS.rootFontSize": 18
+}

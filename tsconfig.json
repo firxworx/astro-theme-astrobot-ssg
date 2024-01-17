@@ -1,0 +1,40 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@components/*": ["src/components/*"],
+      "@config": ["src/config.ts"],
+      "@constants": ["src/constants.ts"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+
+    // explicitly declare essential strict rules for clarity
+    "strict": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "noImplicitAny": true,
+
+    // allow js to support autocompletion in config.mjs files
+    "allowJs": true,
+
+    // enforce additional rigour for stricter type safety
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+
+    // loosen some of astro's strictest rules for developer ergonomics...
+    "noUnusedLocals": false, // a more specific eslint rule is used instead w/ allowance for underscore prefix
+    "allowUnreachableCode": true, // early returns are often used in dev and debug workflows
+    "exactOptionalPropertyTypes": false // allow common JSX props patterns in React with typical type definitions
+  }
+
+  // "include": ["src/**/*"],
+  // "exclude": []
+
+  // friendly warning:
+  // at present astro may have issues if you use multiple `extends` in a tsconfig (typescript v5+ feature)
+}

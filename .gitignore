@@ -1,0 +1,122 @@
+# @see http://help.github.com/ignore-files/
+
+# build output (astro uses dist by default)
+dist/
+out/
+build/
+
+# project workflow
+tmp/
+notes/
+wip/
+
+# private
+deploy.sh
+deploy-setup.sh
+
+# astro generated types
+.astro/
+
+# next generated types (if using next)
+.next/
+
+# dependencies
+node_modules
+
+# environment
+.env.*
+!.env.development
+!.env.sample
+!.env.example
+!.env.*.sample
+!.env.*.example
+/nx-cloud.env
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# common secrets
+*.pem
+*.key
+*.csr
+*.crt
+*.cert
+*.certificate
+*.credentials.json
+*.p12
+*.pfx
+
+# common development tooling
+/.pnp
+.pnp.js
+
+# coverage and related tools such as instanbul
+/coverage
+.nyc_output
+lib-cov
+*.lcov
+
+# output of rollup-plugin-visualizer (if used)
+stats.html
+
+# runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# aws-cdk output (if using cdk)
+.cdk.staging
+cdk.out
+
+# vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ide's + editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# deploy and database
+.serverless/
+.fusebox/
+.dynamodb/
+.elasticbeanstalk
+.ebextensions
+
+# misc
+.DS_Store
+.npm
+/.sass-cache
+.eslintcache
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
+.yarn-integrity
+*.tsbuildinfo
+
+# fonts per @fontsource-derived conventions (if files are hard-copied from @fontsource packages by script)
+# public/fonts/**/*.css
+# !public/fonts/**/app.css
+# public/fonts/**/files

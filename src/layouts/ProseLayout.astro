@@ -1,0 +1,38 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import type { NavLink, PageLayoutMeta } from '@/types/site.types'
+
+/**
+ * Layout for Markdown and MDX pages that applies tailwind's prose styling and adds
+ * the page `title` from front matter as a heading.
+ *
+ * Astro provides the frontmatter object to layouts via `Astro.props.frontmatter`.
+ */
+export interface Props {
+  frontmatter: {
+    title: string
+  }
+  meta?: Partial<PageLayoutMeta>
+  navLinks?: NavLink[]
+}
+
+const {
+  frontmatter: { title },
+  meta,
+  navLinks,
+} = Astro.props || {}
+---
+
+<BaseLayout
+  title={title}
+  meta={meta}
+  navLinks={navLinks}
+  classes={{
+    mainContainer: '',
+  }}
+>
+  <article class="prose dark:prose-inverse max-w-[80ch] mx-auto">
+    <h1>{title}</h1>
+    <slot />
+  </article>
+</BaseLayout>

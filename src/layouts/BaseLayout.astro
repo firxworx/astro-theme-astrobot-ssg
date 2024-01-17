@@ -1,0 +1,133 @@
+---
+import { ViewTransitions } from 'astro:transitions'
+import { cn } from '@helpers/style'
+import Nav from '@components/astro/layout/Nav.astro'
+import { LAYOUT_NAV_LINKS } from '@constants'
+import SocialMeta from '@components/astro/layout/SocialMeta.astro'
+import type { NavLink, PageLayoutMeta } from '@/types/site.types'
+import { SITE } from '@config'
+import { trailingSlash } from '../helpers/slashes'
+
+/**
+ * Parent (base) layout for the other layouts and all pages currently in this project.
+ * Specifies `head`, `body`, and adds key structural body elements: `header`, `main`, and `footer`.
+ *
+ * This layout includes JavaScript for the light/dark theme toggle button in an `is:inline` script in the head.
+ * The script is located here to prevent a flash of incorrectly-themed content (which can look similar to a
+ * flash-of-unstyled content or FOUC) and to support multiple theme toggle buttons on the same page.
+ *
+ * @see ThemeToggle.astro for the theme toggle button that's dependent on the script in this file.
+ *
+ * @see ProseLayout.astro
+ * @see PageLayout.astro
+ */
+export interface Props {
+  title?: string | undefined
+  meta?: Partial<PageLayoutMeta> | undefined
+  navLinks?: NavLink[]
+  classes?: {
+    mainContainer?: string
+  }
+}
+
+const { navLinks = LAYOUT_NAV_LINKS, classes = {}, meta } = Astro.props || {}
+
+const canonicalUrl =
+  (meta?.canonicalUrl ? trailingSlash(meta.canonicalUrl) : undefined) ||
+  new URL(Astro.url.pathname, Astro.site).toString()
+
+const head: PageLayoutMeta = {
+  title: SITE.title,
+  description: SITE.description,
+  author: SITE.author,
+  keywords: SITE.keywords,
+  canonicalUrl,
+  image: new URL(meta?.image || SITE.image || 'og.png', Astro.url.origin).href,
+  ...meta,
+}
+
+const copyright = String(import.meta.env.PUBLIC_FOOTER_COPYRIGHT || '')
+
+// set the max width of the theme here
+const containerClasses = {
+  width: 'w-full mx-auto max-w-5xl',
+  padding: 'px-4 sm:px-6 md:px-8',
+}
+---
+
+<html lang={SITE.locale} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    {head.title ? <meta name="title" content={head.title} /> : null}
+    {head.description ? <meta name="description" content={head.description} /> : null}
+    {head.author ? <meta name="author" content={head.author} /> : null}
+    {head.keywords ? <meta name="keywords" content={head.keywords} /> : null}
+    <meta name="generator" content={Astro.generator} />
+
+    <SocialMeta meta={head} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={head.canonicalUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <title>{head.title}</title>
+
+    <ViewTransitions />
+
+    <script is:inline>
+      function getThemePreference() {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme')
+        }
+
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      }
+
+      function applyTheme(theme) {
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark')
+        } else {
+          document.documentElement.classList.add('dark')
+        }
+
+        window.localStorage.setItem('theme', theme)
+      }
+
+      const fxTheme = getThemePreference()
+      applyTheme(fxTheme)
+
+      // run after astro navigation with view transitions
+      document.addEventListener('astro:after-swap', function () {
+        applyTheme(getThemePreference())
+      })
+
+      // sync with system changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches: isDarkTheme }) => {
+        applyTheme(isDarkTheme ? 'dark' : 'light')
+      })
+    </script>
+  </head>
+  <body class="grid grid-rows-[auto_1fr_auto] min-h-screen">
+    <header transition:persist>
+      <Nav
+        classes={{
+          nav: containerClasses.width,
+          container: containerClasses.padding,
+        }}
+        navLinks={navLinks}
+      />
+    </header>
+    <main transition:animate="fade" class="pt-12 pb-16 xs:pb-20">
+      <div class={cn(containerClasses.width, containerClasses.padding, classes.mainContainer)}>
+        <slot />
+      </div>
+    </main>
+    <footer transition:persist class="px-2 py-4">
+      <div class="grid place-items-center font-base text-sm">
+        <span>&copy; {new Date().getFullYear()} {copyright}</span>
+      </div>
+    </footer>
+  </body>
+</html>

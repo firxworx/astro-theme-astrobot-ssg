@@ -1,0 +1,25 @@
+---
+import { cn } from '@helpers/style'
+import type { HTMLAttributes } from 'astro/types'
+
+/**
+ * Icon Button wrapper for the navigation menu that's intended for use with an icon/svg child.
+ */
+export interface Props extends HTMLAttributes<'button'> {
+  [key: `data-${string}`]: string
+}
+
+const { class: className, ...restProps } = Astro.props
+---
+
+<button
+  class={cn(
+    'group inline-flex items-center justify-center p-2 rounded-md transition-colors',
+    'bg-P-nav-button hover:bg-P-nav-button-hover',
+    'cx-focus-visible focus-visible:rounded-md',
+    className,
+  )}
+  {...restProps}
+>
+  <slot />
+</button>

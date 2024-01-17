@@ -1,0 +1,89 @@
+---
+import type { Page, GetStaticPaths } from 'astro'
+import { getCollection, type CollectionEntry } from 'astro:content'
+import { CONTENT, SITE } from '@config'
+import { getFilteredSortedPosts } from '@helpers/content/posts'
+import { getPathSegment } from '@helpers/urls'
+import { cn } from '@helpers/style'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { Link } from '@components/react/Link'
+import { Pagination } from '@components/react/content/Pagination'
+import { Heading } from '@components/react/Heading'
+import { DateStamp } from '@components/react/content/DateStamp'
+import type { PageLayoutMeta } from '@/types/site.types'
+
+/**
+ * Page that renders a paginated lists of blog posts.
+ */
+interface Props {
+  page: Page<CollectionEntry<'blog'>>
+  // uniqueTags: string[]
+}
+
+/**
+ * Define the static paths for each numbered page for Astro to generate.
+ */
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = getFilteredSortedPosts(await getCollection('blog'))
+
+  // @future props can include unique tags, etc
+  return paginate(posts, { props: {}, pageSize: CONTENT.pageSize })
+}) satisfies GetStaticPaths
+
+const { page } = Astro.props
+const posts = page.data
+
+const layoutMeta: Partial<PageLayoutMeta> = {
+  title: `Blog — ${SITE.title}`,
+  description: `Blog posts page ${page.currentPage} of ${page.lastPage} — ${SITE.description}`,
+}
+
+const segment = getPathSegment(Astro.url.pathname, 0)
+---
+
+<BaseLayout meta={layoutMeta}>
+  <section class="max-w-[80ch] mx-auto">
+    <Heading as="h1">Blog</Heading>
+    <p class="mb-6">
+      The number of posts per page can be set via the <code>PUBLIC_POSTS_PER_PAGE</code> environment variable.
+    </p>
+    <div class="flex flex-col gap-4" role="list">
+      {
+        posts.map(({ data: { title, description, publishedAt, modifiedAt }, slug }) => (
+          <div role="listitem">
+            <Link
+              href={`/${segment}/${slug}/`}
+              className={cn(
+                'block group border-P-box-outline border p-4 rounded-md hocus:rounded-md font-normal transition-all',
+                'bg-P-layout-main no-underline hocus:bg-P-layout-main-hover hover:no-underline',
+              )}
+            >
+              <DateStamp
+                publishedAt={publishedAt}
+                modifiedAt={modifiedAt}
+                hasIcon={false}
+                className="text-sm text-P-content-caption mb-0.5"
+              />
+              <h2
+                class={cn(
+                  'max-w-prose font-semibold leading-snug xs:leading-normal',
+                  'text-P-content-link/95 group-hover:text-P-content-link-hover/95 group-hover:no-underline',
+                )}
+              >
+                {title}
+              </h2>
+              <p class="mt-2 max-w-prose text-P-content-copy/95 text-sm sm:text-base">{description}</p>
+            </Link>
+          </div>
+        ))
+      }
+    </div>
+    <Pagination
+      className="my-8"
+      currentPage={page.currentPage}
+      totalPages={page.lastPage}
+      prevUrl={page.url.prev}
+      nextUrl={page.url.next}
+    />
+  </section>
+</BaseLayout>

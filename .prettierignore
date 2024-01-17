@@ -1,0 +1,25 @@
+# ignore files from prettier formatting
+
+# frameworks and tooling
+.astro
+.next
+/.cache
+/.nx/cache
+
+# dependencies
+node_modules
+
+# build output
+/dist
+/coverage
+/tmp
+/out
+/out-tsc
+/media
+cdk.out
+.cdk.staging
+
+# lock files
+pnpm-lock.yaml
+yarn.lock
+package-lock.json

@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { Link } from '@components/react/Link'
+
+const GITHUB_REPO_URL = 'https://github.com/firxworx/astro-theme-astrobot-ssg'
+---
+
+<BaseLayout classes={{ mainContainer: '' }}>
+  <section class="prose dark:prose-inverse max-w-[80ch] mx-auto text-pretty">
+    <h1 id="about">About</h1>
+    <p>
+      This theme was created by Kevin Firko (<Link href="https://github.com/firxworx">@firxworx</Link> on GitHub) to serve
+      as an Astro project starter for
+      <Link href="https://bitcurve.com" className="whitespace-nowrap">Bitcurve Systems</Link> and released to the community
+      under MIT license.
+    </p>
+    <p>
+      <a href={GITHUB_REPO_URL}>{GITHUB_REPO_URL}</a>
+    </p>
+    <p>This customizable theme provides a foundation for blogs, informational, and brochureware type websites.</p>
+    <p>
+      To inquire about our professional support, customization, and design &amp; development services shoot us an email
+      at:
+      <a href="mailto:consulting@bitcurve.com">consulting@bitcurve.com</a>.
+    </p>
+    <h2 id="start">Get Started</h2>
+    <h3>Astro CLI</h3>
+    <p>
+      You can use the astro CLI to create a new project using this one as a template: <br />
+      <code>pnpm create astro@latest --template firxworx/bcx-astro</code>
+    </p>
+    <h3>Manual Setup</h3>
+    <p>
+      Clone or fork the project repo on GitHub:<br />
+      <a href={GITHUB_REPO_URL}>{GITHUB_REPO_URL}</a>
+    </p>
+    <p>Then navigate to your local project folder and execute the following commands:</p>
+    <ul>
+      <li><code>pnpm install</code> &ndash; install dependencies</li>
+      <li><code>pnpm dev</code> &ndash; start the dev server</li>
+    </ul>
+    <h2>Customization</h2>
+    <p>
+      Check out the <Link href={GITHUB_REPO_URL}>README</Link> to learn how to customize this template.
+    </p>
+  </section>
+</BaseLayout>

@@ -1,0 +1,97 @@
+---
+title: 'MDX & Markdown'
+layout: '@layouts/ProseLayout.astro'
+---
+
+import { ExampleComponent } from '@/components/react/examples/ExampleComponent'
+import { ExampleCounter } from '@/components/react/examples/ExampleCounter'
+import { Link } from '@/components/react/Link'
+
+Pages in `src/pages` can be authored in markdown (`*.md`) and MDX (`*.mdx`) thanks to the official mdx integration: `@astrojs/mdx`.
+
+This page is an `.mdx` file that contains a mix of markdown and React components.
+
+## Front Matter & Layout Selection
+
+The layout for this page is set in the front matter using the reserved `layout` property.
+
+Astro passes front matter data to layouts via props where the object is accessible via `Astro.props.frontmatter`.
+
+## React Components
+
+The following `ExampleComponent` is written in React and styled with tailwind. Its `import` statement is written after the front matter block and before the content.
+
+The component is inserted into the content using standard JSX syntax: `<ExampleComponent .../>`:
+
+<ExampleComponent className="max-w-sm mx-auto" />
+
+The following `ExampleCounter` component is interactive. Try clicking the button to increment the counter.
+
+<ExampleCounter client:load className="max-w-sm mx-auto" />
+
+Astro's `client:load` directive is passed as a prop to `ExampleCounter`. This directive tells Astro to load the component on the client-side and hydrate it with its JavaScript so that interactivity works.
+
+Astro's various `client:*` directives instruct Astro how and when to load the component's client-side JavaScript and enable interactivity.
+
+## Markdown
+
+Standard markdown syntax is ready to use including **bold**, _italic_, `code`, etc. thanks to tailwind's official typography plugin, `@tailwindcss/typography`.
+
+This page's layout (`ProseLayout`) adds the plugin's `.prose` class to its main content container.
+
+[Links](/about/) and bullet lists are styled for legibility:
+
+- first item
+- second item
+- third item
+
+Number lists appear as you expect:
+
+1. hello
+1. world
+
+Tables are styled:
+
+| Animal | Diet    |
+| ------ | ------- |
+| dog    | meat    |
+| rabbit | veggies |
+| budgie | seeds   |
+
+Markdown code fence blocks feature syntax highlighting powered by shiki:
+
+```sh
+#!/usr/bin/env bash
+
+echo "hello world"
+```
+
+## TailwindCSS
+
+Tailwind's utility classes can be used practically anywhere in this project including `*.md`, `*.mdx`, `*.astro`, and `*.tsx` files.
+
+### Tailwind Classes
+
+Here's an example of an element written inline this MDX content styled using tailwindcss:
+
+<div class="flex h-10 w-10 rounded-full bg-slate-700 dark:bg-slate-600 justify-center items-center">
+  <span>😊</span>
+</div>
+
+And here's its code:
+
+```html
+<div class="flex h-10 w-10 rounded-full bg-slate-700 dark:bg-slate-600 justify-center items-center">
+  <span>😊</span>
+</div>
+```
+
+### Line Lengths
+
+If your site will include longer-form content you should ensure that lines of text are restricted to a maximum length per line.
+
+Ensure that `max-w-prose` or a custom max-width such as `max-w-[80ch]` is applied to any elements that contain potentially-long text (or their relevant parents).
+
+Tailwind's `max-w-prose` utility has a default value of `65ch`.
+
+Recommendations for maximum line lengths vary however ranges between 45 and 90 characters are commonly cited. The <Link href="https://www.w3.org/WAI/tutorials/page-structure/styling/#:~:text=Line%20length">W3C advises</Link> that lines of text should not exceed 80 characters.

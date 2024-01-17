@@ -1,0 +1,40 @@
+# conforms with https://make.wordpress.org/core/handbook/coding-standards/
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.{astro,js,jsx,ts,tsx,cjs,mjs,json,yml,yaml,xml,html,css,sass,scss,less,sh}]
+indent_style = space
+indent_size = 2
+
+[*.{md,mdx}]
+indent_style = space
+indent_size = 2
+
+# python is classically indented with 4 spaces
+[*.py]
+indent_style = space
+indent_size = 4
+
+# indent 4 is more typical/official for php however 2 is a preference for compact code
+[*.php]
+indent_style = space
+indent_size = 2
+
+[*.sql]
+indent_style = space
+indent_size = 2
+
+[{.prettierrc,.jshintrc,.babelrc}]
+indent_style = space
+indent_size = 2
+
+# [{*.txt,wp-config-sample.php,wp-config.php}]
+# end_of_line = crlf

@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { HeroSection } from '@components/react/landing/HeroSection'
+---
+
+<BaseLayout>
+  <HeroSection
+    heading="Astrobot SSG Foundation"
+    blurb="A ready-to-scale Astro v4 theme configured for static sites with support for React, Tailwind, MDX, and TypeScript."
+    primaryLinkButton={{ href: '/about/#start', text: 'Get Started' }}
+    outlineLinkButton={{ href: '/about/', text: 'About Theme' }}
+  />
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-P-box-fg/95 mt-8">
+    {
+      [
+        // copywriting in the 'feature boxes'
+        'Light & Dark Theme',
+        'Astro + React = ❤️',
+        'Sitemap Generation',
+        'Tailwind Preset',
+        'View Transitions API',
+        'robots.txt on Build',
+        'Image Generation',
+        'Docs & Comments',
+        'RSS XML Generation',
+      ].map((caption) => (
+        <div class="grid place-items-center text-center p-4 rounded-md bg-P-box leading-tight">{caption}</div>
+      ))
+    }
+  </div>
+  {}
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+import { getCollection } from 'astro:content'
+
+import { ASTRO_SITE_URL, BLOG_PATHNAME_SEGMENT } from '@config'
+import { getFilteredSortedPosts } from '@helpers/content/posts'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { DateStamp } from '@components/react/content/DateStamp'
+import { AuthorStamp } from '@components/react/content/AuthorStamp'
+import { isRecord } from '@/types/type-guards'
+import type { PageLayoutMeta } from '@/types/site.types'
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+export const getStaticPaths = (async () => {
+  const posts = getFilteredSortedPosts(await getCollection('blog'))
+  return posts.map((post) => {
+    return {
+      params: { slug: post.slug },
+      props: { post },
+    }
+  })
+}) satisfies GetStaticPaths
+
+const { post } = Astro.props
+const { title, author, description, publishedAt, modifiedAt, image } = post.data
+
+const layoutMeta: Partial<PageLayoutMeta> = {
+  title,
+  description,
+  publishedAt,
+  modifiedAt,
+  image:
+    isRecord(image) && 'src' in image
+      ? image.src
+      : typeof image === 'string'
+        ? image
+        : `${ASTRO_SITE_URL}/${BLOG_PATHNAME_SEGMENT}/${post.slug}/og.png`,
+}
+
+// enforce the accuracy of BLOG_PATHNAME_SEGMENT constant as it is used elsewhere in the codebase
+if (!Astro.url.pathname.startsWith(`/${BLOG_PATHNAME_SEGMENT}`)) {
+  throw new Error(
+    `Maintainability/Integrity smoke-check failed: ${Astro.url.pathname} does not start with /${BLOG_PATHNAME_SEGMENT}`,
+  )
+}
+
+const { Content } = await post.render()
+---
+
+<BaseLayout title={title} meta={layoutMeta}>
+  <article role="article" class="prose dark:prose-invert max-w-[80ch] mx-auto">
+    <header>
+      <h1 class="mt-0 mb-5 text-pretty">{title}</h1>
+      <div class="flex flex-col gap-1 justify-center text-P-content-caption/95">
+        <AuthorStamp author={author} size="sm" />
+        <DateStamp publishedAt={publishedAt} modifiedAt={modifiedAt} size="sm" />
+      </div>
+    </header>
+    <div>
+      <Content />
+    </div>
+    <footer>
+      <ul class="my-8">
+        {/*tags.map((tag) => <Tag tag={slugifyStr(tag)} />)*/}
+      </ul>
+    </footer>
+  </article>
+</BaseLayout>

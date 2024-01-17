@@ -1,0 +1,95 @@
+# dependencies
+/node_modules/**
+
+# build output (astro defaults to /dist)
+/build/**
+/dist/**
+/out/**
+
+# workflow
+/tmp
+/wip
+/docs
+
+# astro generated types
+.astro/
+
+# aws-cdk (if used in the project)
+.cdk.staging
+cdk.out
+
+# environment
+.env
+.env.*
+!.env.development
+!.env.sample
+/nx-cloud.env
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# common secrets and keys
+*.pem
+*.key
+*.csr
+*.crt
+*.cert
+*.certificate
+*.credentials.json
+*.p12
+*.pfx
+
+# development tooling
+/.pnp
+.pnp.js
+.npm
+.eslintcache
+*.tsbuildinfo
+
+# coverage and related tools e.g. instanbul
+/coverage
+.nyc_output
+lib-cov
+*.lcov
+
+# output of rollup-plugin-visualizer (if used)
+stats.html
+
+# runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc ide and editor files
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# misc deployment and database
+.serverless/
+.fusebox/
+.dynamodb/
+.elasticbeanstalk
+.ebextensions
+
+# OS generated files
+.DS_Store
+
+# misc
+/connect.lock
+/libpeerconnection.log

@@ -1,0 +1,330 @@
+---
+import { cn } from '@helpers/style'
+import { isCurrentPageOrAncestor } from '@helpers/urls'
+import AstroBotLogo from '@components/astro/assets/AstroBotLogo.astro'
+import MenuIcon from '@components/astro/icons/MenuIcon.astro'
+import XIcon from '@components/astro/icons/XIcon.astro'
+import ThemeToggleButton from './ThemeToggleButton.astro'
+import type { NavLink } from '@/types/site.types'
+
+/**
+ * Navigation component that includes a responsive menu and light/dark theme toggle.
+ */
+export interface Props {
+  navLinks: NavLink[]
+  classes?: {
+    nav?: string
+    container?: string
+  }
+}
+
+const { navLinks, classes } = Astro.props
+
+const pathname = new URL(Astro.request.url).pathname
+const isCurrent = (href: string) => isCurrentPageOrAncestor(pathname, href)
+---
+
+<nav id="nav" class={classes?.nav} role="navigation" aria-label="main">
+  <div class={cn('z-20 relative isolate flex flex-wrap items-center justify-around', classes?.container)}>
+    <div
+      class={cn(
+        'relative flex flex-1 items-center justify-between',
+        'h-14', // explicitly set height for clarity and smooth transitions (this value must match with usage below)
+      )}
+    >
+      <div class="flex flex-1 items-center gap-2 pr-4">
+        <a
+          href="/"
+          class={cn(
+            'block shrink-0 -ml-2 pl-2 pr-2', // negative margins w/ padding for larger tap target
+            'text-P-nav-logo hover:text-P-nav-logo-hover',
+            'cx-focus-visible focus-visible:rounded-sm',
+          )}
+        >
+          <AstroBotLogo class="inline-block h-6 w-auto" />
+        </a>
+        <div class="hidden sm:flex sm:justify-end">
+          <ThemeToggleButton size="md" />
+        </div>
+      </div>
+      <button
+        class={cn(
+          'block sm:hidden -mr-4 rtl:-ml-4 px-4 py-3', // negative margins w/ padding for larger tap target
+          'text-P-nav-link hover:text-P-nav-link-hover bg-transparent hover:bg-P-nav-menu-hover',
+          'cx-focus-visible focus-visible:rounded-md focus:ring-inset',
+        )}
+        aria-controls="navMenu"
+        aria-expanded="false"
+        data-menu-button
+      >
+        <MenuIcon class="h-6 w-6 inline-block" data-icon="menu" aria-hidden="true" />
+        <XIcon class="h-6 w-6 hidden" data-icon="close" aria-hidden="true" />
+        <span class="sr-only">Menu</span>
+      </button>
+    </div>
+    <div
+      id="navMenu"
+      class={cn(
+        // top-14 units (3.5rem) matches height of the nav bar (this value must match with usage above)
+        'z-0 hidden absolute w-full top-14 rounded-b-sm shadow-lg',
+        'bg-P-nav-menu sm:bg-transparent',
+        'sm:flex sm:relative sm:top-0 sm:w-fit sm:pb-0 sm:rounded-b-none sm:shadow-none',
+
+        // pull menu to the right by the same amount as the container padding
+        '-ml-0 sm:-ml-4 md:-ml-6',
+
+        // refer to script below for addition of transition/animation classes (managed in js for full control)
+      )}
+      data-state="closed"
+    >
+      <div class="block sm:hidden h-[2px] bg-P-layout-divider"></div>
+      <ul class="sm:flex sm:gap-2 text-base">
+        {
+          navLinks.map(({ href, text }) => (
+            <li>
+              <a
+                href={href}
+                class={cn(
+                  'inline-block px-4 py-4 w-full sm:w-fit font-medium transition-colors',
+                  'text-P-nav-link',
+                  // 'hover:text-P-nav-link-hover',
+
+                  // set current-page style based on aria-current attribute
+                  'aria-[current=page]:text-P-nav-link-current aria-[current=page]:hover:text-P-nav-link-current',
+
+                  // refer to tailwind preset for custom cx-* class definitions
+                  'cx-focus-visible focus-visible:rounded-sm focus-visible:ring-inset',
+                )}
+                aria-current={isCurrent(href) ? 'page' : undefined}
+              >
+                {text}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="block sm:hidden h-[2px] bg-P-layout-divider"></div>
+      <div class="flex justify-end gap-4 py-2 px-2 sm:hidden w-full">
+        <ThemeToggleButton size="md" />
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  import { debounce } from '@helpers/debounce'
+  import { isCurrentPageOrAncestor } from '@helpers/urls'
+
+  // mobile breakpoint in pixels (note tailwind's default for the `sm` breakpoint is 640px)
+  const MOBILE_BREAKPOINT_PX = 640
+
+  const navMenuOpenAnimationClassNames = [
+    'motion-safe:animate-in',
+    'motion-safe:fade-in',
+    'duration-200',
+
+    // tip: slide animations may require a pseudo solution to look right (z layering)
+    // 'motion-safe:slide-in-from-top',
+  ]
+  const navMenuCloseAnimationClassNames = [
+    'motion-safe:animate-out',
+    'motion-safe:fade-out',
+    'pointer-events-none',
+    'duration-100',
+
+    // tip: slide animations may require a pseudo solution to look right (z layering)
+    // 'motion-safe:slide-out-to-top',
+  ]
+
+  const navMenu = document.getElementById('navMenu')
+  const navLinks = navMenu?.querySelectorAll('a[href]') ?? []
+  const navButtons = document.querySelectorAll('button[data-menu-button]')
+
+  // @future considering adding keyboard navigation with arrow keys (optional per w3-aria disclosure pattern)
+  //
+  // const navMenuFocusableElements =
+  //   (navMenu?.querySelectorAll(
+  //     'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select',
+  //   ) as NodeListOf<HTMLElement>) ?? []
+  //
+  // const navMenuFirstFocusableElement = navMenuFocusableElements?.[0]
+  // const navMenuLastFocusableElement = navMenuFocusableElements?.[navMenuFocusableElements.length - 1]
+
+  /**
+   * Click-away handler to close the nav menu when clicking outside of the menu.
+   */
+  function handleDocumentClick(event: MouseEvent) {
+    if (!navMenu || !(event.target instanceof Element)) {
+      return
+    }
+
+    if (!navMenu.contains(event.target) && !event.target.closest('[data-menu-button]')) {
+      closeMenu()
+    }
+  }
+
+  /**
+   * Click handler for the nav menu to close when a child link is clicked.
+   * Does not include buttons as a design decision (e.g. keep menu open on light/dark theme change).
+   *
+   * This handler supports SPA-like navigation with view transitions as well as 'jump' links.
+   */
+  function handleNavMenuClick(event: MouseEvent) {
+    if (!navMenu || !(event.target instanceof HTMLElement)) {
+      return
+    }
+
+    if (event.target instanceof HTMLAnchorElement || event.target.closest('a[href]')) {
+      closeMenu({ isAnimatedExit: true })
+    }
+  }
+
+  function handleEscapeKeyDown(event: KeyboardEvent) {
+    if (!navMenu) {
+      return
+    }
+
+    if (event.key === 'Escape') {
+      if (!navMenu.classList.contains('hidden')) {
+        closeMenu()
+      }
+    }
+  }
+
+  function handleMenuButtonClick(event: Event) {
+    if (!navMenu || !(event.target instanceof Element) || !(event.currentTarget instanceof HTMLElement)) {
+      return
+    }
+
+    const isOpen = event.currentTarget.getAttribute('aria-expanded') === 'true'
+
+    if (isOpen) {
+      closeMenu()
+    } else {
+      openMenu()
+    }
+  }
+
+  function handleMenuFocusChange(event: FocusEvent) {
+    if (!navMenu || navMenu.contains(event.relatedTarget as Node | null)) {
+      return
+    }
+
+    closeMenu()
+  }
+
+  function handleResize() {
+    const isOpen = navMenu?.getAttribute('data-state') === 'open'
+
+    if (isOpen && window.innerWidth > MOBILE_BREAKPOINT_PX) {
+      closeMenu()
+    }
+  }
+
+  const handleResizeDebounced = debounce(handleResize, 250)
+
+  // @future for keyboard navigation
+  //
+  // function focusNextElement(elements: NodeListOf<HTMLElement>, currentIndex: number) {
+  //   if (currentIndex < elements.length - 1) {
+  //     elements[currentIndex + 1]?.focus()
+  //   }
+  // }
+  //
+  // function focusPreviousElement(elements: NodeListOf<HTMLElement>, currentIndex: number) {
+  //   if (currentIndex > 0) {
+  //     elements[currentIndex - 1]?.focus()
+  //   }
+  // }
+
+  function openMenu(): void {
+    if (!navMenu) {
+      return
+    }
+
+    navMenu.setAttribute('data-state', 'open')
+    navMenu.classList.remove('hidden')
+
+    // be warned that animations risk adding minor jank when rendering children (nav links)
+    navMenu.classList.add(...navMenuOpenAnimationClassNames)
+
+    navButtons.forEach((button) => {
+      button.setAttribute('aria-expanded', 'true')
+      button.querySelector('[data-icon="menu"]')?.classList.replace('inline-block', 'hidden')
+      button.querySelector('[data-icon="close"]')?.classList.replace('hidden', 'inline-block')
+    })
+
+    navMenu.addEventListener('click', handleNavMenuClick)
+    navMenu.addEventListener('focusout', handleMenuFocusChange)
+    navMenu.addEventListener(
+      'animationend',
+      () => {
+        navMenu.classList.remove(...navMenuOpenAnimationClassNames)
+      },
+      { once: true },
+    )
+
+    document.addEventListener('click', handleDocumentClick)
+    document.addEventListener('keydown', handleEscapeKeyDown)
+    window.addEventListener('resize', handleResizeDebounced)
+  }
+
+  function closeMenu(options: { isAnimatedExit: boolean } = { isAnimatedExit: true }): void {
+    if (!navMenu) {
+      return
+    }
+
+    navMenu.setAttribute('data-state', 'closed')
+
+    if (options.isAnimatedExit) {
+      navMenu.classList.add(...navMenuCloseAnimationClassNames)
+    }
+
+    navButtons.forEach((button) => {
+      button.setAttribute('aria-expanded', 'false')
+      button.querySelector('[data-icon="menu"]')?.classList.replace('hidden', 'inline-block')
+      button.querySelector('[data-icon="close"]')?.classList.replace('inline-block', 'hidden')
+    })
+
+    // wait for the exit animation to finish before hiding the menu
+    if (options.isAnimatedExit) {
+      navMenu.addEventListener(
+        'animationend',
+        () => {
+          navMenu.classList.remove(...navMenuCloseAnimationClassNames)
+          navMenu.classList.add('hidden')
+        },
+        { once: true },
+      )
+    } else {
+      navMenu.classList.add('hidden')
+    }
+
+    navMenu.removeEventListener('click', handleNavMenuClick)
+    navMenu.removeEventListener('focusout', handleMenuFocusChange)
+    document.removeEventListener('click', handleDocumentClick)
+    document.removeEventListener('keydown', handleEscapeKeyDown)
+    window.removeEventListener('resize', handleResizeDebounced)
+  }
+
+  /**
+   * Event handler to update nav links aria-current after a view transition (`astro:after-swap` event).
+   */
+  function syncNavLinkAriaCurrentState() {
+    const pathname = window.location.pathname
+
+    navLinks.forEach((link) => {
+      if (isCurrentPageOrAncestor(pathname, link.getAttribute('href'))) {
+        link.setAttribute('aria-current', 'page')
+      } else {
+        link.setAttribute('aria-current', 'false')
+      }
+    })
+  }
+
+  navButtons.forEach((button) => {
+    button.addEventListener('click', handleMenuButtonClick)
+  })
+
+  document.addEventListener('astro:after-swap', syncNavLinkAriaCurrentState)
+</script>
